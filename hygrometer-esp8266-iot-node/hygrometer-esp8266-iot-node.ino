@@ -1,5 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <EEPROM.h>
+#include <cmath>
 #define ONBOARD_LED 2
 
 // NOTE: Change these values to the WiFi values for your personal WiFi
@@ -351,7 +352,7 @@ void loop()
   //   numbers so we can change the number of reads
 
   double averageOfReads = (static_cast<double>(totSum) / NUM_READS);
-  int moisture = averageOfReads;
+  int moisture = std::round(averageOfReads);
   Serial.printf("Done: %i\n", moisture);
 
   // Get server configuration from EEPROM
