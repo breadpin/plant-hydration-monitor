@@ -128,13 +128,17 @@ $(document).ready(function () {
 
 // register plant modal
 function openRegisterPlantModal() {
+  const form = document.getElementById('register-plant-form');
+  //bind status message to form
+  statusMessage.bindedDiv = form;
+
   const modal = document.getElementById('register-plant-modal');
   modal.classList.remove('hidden');
   modal.style.display = 'flex';
   modal.style.alignItems = 'center';
   modal.style.justifyContent = 'center';
   // clear form
-  document.getElementById('register-plant-form').reset();
+  form.reset();
   // clear any previous status messages
   clearStatusMessage();
   // load available serial devices
@@ -158,6 +162,7 @@ function closeRegisterPlantModal() {
   modal.classList.add('hidden');
   modal.style.display = 'none';
   clearStatusMessage();
+  statusMessage.bindedDiv = null;
 
   // reset form
   const form = document.getElementById('register-plant-form');
@@ -168,6 +173,14 @@ function closeRegisterPlantModal() {
   detectedMacAddress = null;
 }
 
+
+const statusMessage = {
+  bindedDiv: null,
+  okStyling: "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-700",
+  errorStyling: "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700"
+}
+
+//displays message as first child in bindedDiv
 function showStatusMessage(message, isError = false) {
   // Remove any existing status message
   clearStatusMessage();
@@ -176,13 +189,12 @@ function showStatusMessage(message, isError = false) {
   statusDiv.id = 'status-message';
   statusDiv.className = `mb-4 p-3 rounded-lg text-sm ${
     isError
-      ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700'
-      : 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-700'
+      ? statusMessage.errorStyling
+      : statusMessage.okStyling
   }`;
   statusDiv.textContent = message;
 
-  const form = document.getElementById('register-plant-form');
-  form.insertBefore(statusDiv, form.firstChild);
+  statusMessage.bindedDiv.insertBefore(statusDiv, statusMessage.bindedDiv.firstChild);
 }
 
 function clearStatusMessage() {
