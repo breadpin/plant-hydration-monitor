@@ -162,6 +162,7 @@ function closeRegisterPlantModal() {
   modal.classList.add('hidden');
   modal.style.display = 'none';
   clearStatusMessage();
+  statusMessage.bindedDiv = null;
 
   // reset form
   const form = document.getElementById('register-plant-form');
