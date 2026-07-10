@@ -58,8 +58,8 @@ function createPlantCard(plant, saturationData) {
   const cardElement = clone.querySelector('div');
   cardElement.dataset.plantId = plant.id; // Store plant ID for deletion
   cardElement.addEventListener('click', (e) => {
-    // Don't navigate if delete button was clicked
-    if (e.target.closest('[data-field="delete-btn"]')) {
+    // Don't navigate if delete button or edit button was clicked
+    if (e.target.closest('[data-field="delete-btn"]') || e.target.closest('[data-field="open-edit-modal-btn"]')) {
       return;
     }
     console.log(`Clicked on ${plant.name}`);
@@ -400,12 +400,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-// Delete plant functionality
-let currentPlantToDelete = null;
-
-function openDeletePlantModal(deleteButton) {
+//Utility function that returns plant card element of the childElement param
+function getPlantCardFromChild(childElement) {
   // Find the plant card container - traverse up to find the card with plant data
-  let plantCard = deleteButton.parentElement;
+  let plantCard = childElement.parentElement;
 
   // Keep going up until we find an element with dataset.plantId
   while (plantCard && !plantCard.dataset.plantId) {
@@ -416,9 +414,128 @@ function openDeletePlantModal(deleteButton) {
       break;
     }
   }
-
   if (!plantCard) {
-    console.error('Could not find plant card container');
+    return new Error("Could not find plant card container");
+  }
+  return plantCard;
+}
+
+function openEditPlantModal(editButton) {
+  const plantCard = getPlantCardFromChild(editButton);
+
+  if (Error.isError(plantCard)) {
+    console.error(plantCard.message);
+    alert('Error: Could not find plant card');
+    return;
+  }
+  const plantNameElement = plantCard.querySelector('[data-field="name"]');
+
+  if (!plantNameElement) {
+    console.error('Could not find plant name element in card:', plantCard);
+    alert('Error: Could not find plant information');
+    return;
+  }
+
+  const plantName = plantNameElement.textContent;
+  const plantId = plantCard.dataset.plantId;
+
+  console.log('Found plant:', {
+    name: plantName,
+    id: plantId,
+    card: plantCard,
+  });
+
+  const modal = document.getElementById('edit-plant-modal');
+  const header = document.getElementById('edit-plant-modal-header');
+  const headerSpan = document.getElementById('edit-plant-modal-header-span');
+
+  const plantNameInput = document.getElementById('edit-plant-name');
+  const plantLocationInput = document.getElementById('edit-plant-location');
+  const plantDeviceInput = document.getElementById('edit-serial-device');
+  
+  header.firstChild.textContent = "Editing plant: ";
+  headerSpan.textContent = plantName;
+
+
+  plantNameInput.addEventListener('focus', (e) => {
+    plantNameInput.select();
+  })
+  plantLocationInput.addEventListener('focus', (e) => {
+    plantLocationInput.select();
+  })
+
+  //Make input fields uneditable until plant is fetched
+  plantNameInput.readOnly = true;
+  plantLocationInput.readOnly = true;
+  plantDeviceInput.disabled = true;
+
+  plantNameInput.classList.add("text-yellow-600");
+  plantLocationInput.classList.add("text-yellow-600");
+  plantDeviceInput.classList.add("text-yellow-600");
+
+  plantNameInput.value = "Fetching Plant Info";
+  plantLocationInput.value = "Fetching Plant Info";
+
+  const pendingOption = document.createElement('option');
+  pendingOption.textContent = "Fetching Plant Info";
+  pendingOption.selected = true;
+
+  plantDeviceInput.prepend(pendingOption);
+
+
+  fetch(`api/splant/${plantId}`)
+    .then(response => response.json())
+      .catch(err => {
+        console.error("Failed to fetch plant info: " + err);
+        throw err;
+      })
+        .then(plant => {
+          
+          //remove pending option
+          plantDeviceInput.removeChild(pendingOption);
+
+          //remove pending color
+          plantNameInput.classList.remove("text-yellow-600");
+          plantLocationInput.classList.remove("text-yellow-600");
+          plantDeviceInput.classList.remove("text-yellow-600");
+
+          //set fields with the fields the plant currently has
+          plantNameInput.value = plant.name;
+          plantNameInput.placeholder = plant.name;
+
+          plantLocationInput.value = plant.location;
+          plantLocationInput.placeholder = plant.location;
+
+          plantDeviceInput.children[0].value = plant.MAC;
+          plantDeviceInput.children[0].append(plant.MAC);
+                    
+
+          //allow user to edit form fields
+          plantNameInput.readOnly = false;
+          plantLocationInput.readOnly = false;
+          plantDeviceInput.disabled = false;
+
+          //automatically selects defualt option
+          plantDeviceInput.value = plant.MAC;
+        })
+
+
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
+  
+  
+}
+
+// Delete plant functionality
+let currentPlantToDelete = null;
+
+function openDeletePlantModal(deleteButton) {
+    const plantCard = getPlantCardFromChild(deleteButton);
+
+  if (Error.isError(plantCard)) {
+    console.error(plantCard.message);
     alert('Error: Could not find plant card');
     return;
   }
@@ -466,6 +583,12 @@ function openDeletePlantModal(deleteButton) {
       deviceSection.classList.add('hidden');
     }
   });
+}
+function closeEditPlantModal() {
+  const modal = document.getElementById('edit-plant-modal');
+  modal.classList.add('hidden');
+  modal.style.display = 'none';
+
 }
 
 function closeDeletePlantModal() {
