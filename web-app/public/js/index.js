@@ -376,12 +376,12 @@ async function configureDevice(formData) {
 
 // Form submit handler
 document.addEventListener('DOMContentLoaded', function () {
-  const form = document.getElementById('register-plant-form');
-  if (form) {
-    form.addEventListener('submit', async function (e) {
+  const registerForm = document.getElementById('register-plant-form');
+  if (registerForm) {
+    registerForm.addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      const formData = new FormData(form);
+      const formData = new FormData(registerForm);
 
       // validate
       const requiredFields = [
@@ -410,6 +410,40 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       await configureDevice(formData);
+    });
+  }
+  const editForm = document.getElementById('edit-plant-form');
+  if (editForm) {
+    editForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(editForm);
+
+      // validate
+      const requiredFields = [
+        'edit-plant-name',
+        'edit-plant-location',
+        'edit-serial-device',
+      ];
+      const missingFields = requiredFields.filter(
+        (field) => !formData.get(field)?.trim()
+      );
+
+      if (missingFields.length > 0) {
+        showStatusMessage(
+          `Please fill in all required fields: ${missingFields.join(', ')}`,
+          true
+        );
+        return;
+      }
+
+      // check if device is selected
+      if (!formData.get('serial-device')?.trim()) {
+        showStatusMessage('Please select a serial device', true);
+        return;
+      }
+
+      
     });
   }
 });
