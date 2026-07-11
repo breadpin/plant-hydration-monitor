@@ -184,17 +184,18 @@ const statusMessage = {
 function showStatusMessage(message, isError = false) {
   // Remove any existing status message
   clearStatusMessage();
+  if(statusMessage.bindedDiv) {
+    const statusDiv = document.createElement('div');
+    statusDiv.id = 'status-message';
+    statusDiv.className = `mb-4 p-3 rounded-lg text-sm ${
+      isError
+        ? statusMessage.errorStyling
+        : statusMessage.okStyling
+    }`;
+    statusDiv.textContent = message;
 
-  const statusDiv = document.createElement('div');
-  statusDiv.id = 'status-message';
-  statusDiv.className = `mb-4 p-3 rounded-lg text-sm ${
-    isError
-      ? statusMessage.errorStyling
-      : statusMessage.okStyling
-  }`;
-  statusDiv.textContent = message;
-
-  statusMessage.bindedDiv.insertBefore(statusDiv, statusMessage.bindedDiv.firstChild);
+    statusMessage.bindedDiv.insertBefore(statusDiv, statusMessage.bindedDiv.firstChild);
+  }
 }
 
 function clearStatusMessage() {
@@ -204,10 +205,17 @@ function clearStatusMessage() {
   }
 }
 
+
+
 // serial device management
+
+
 async function refreshSerialDevices() {
   console.log('Refreshing serial devices...');
   try {
+
+
+
     const refreshBtn = document.getElementById('refresh-devices');
     const refreshIcon = refreshBtn.querySelector('svg');
 
