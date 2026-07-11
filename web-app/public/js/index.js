@@ -412,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-//Utility function that returns plant card element of the childElement param
+// Utility function that returns plant card element of the childElement param
 function getPlantCardFromChild(childElement) {
   // Find the plant card container - traverse up to find the card with plant data
   let plantCard = childElement.parentElement;
@@ -476,18 +476,21 @@ function openEditPlantModal(editButton) {
     plantLocationInput.select();
   })
 
-  //Make input fields uneditable until plant is fetched
+  // Make input fields uneditable until plant is fetched
   plantNameInput.readOnly = true;
   plantLocationInput.readOnly = true;
   plantDeviceInput.disabled = true;
 
+  // Add pending color
   plantNameInput.classList.add("text-yellow-600");
   plantLocationInput.classList.add("text-yellow-600");
   plantDeviceInput.classList.add("text-yellow-600");
 
+  // Add Fetching Plant Info text to inputs
   plantNameInput.value = "Fetching Plant Info";
   plantLocationInput.value = "Fetching Plant Info";
 
+  // Add pending Option to select element
   const pendingOption = document.createElement('option');
   pendingOption.textContent = "Fetching Plant Info";
   pendingOption.selected = true;
@@ -503,15 +506,15 @@ function openEditPlantModal(editButton) {
       })
         .then(plant => {
           
-          //remove pending option
+          // remove pending option
           plantDeviceInput.removeChild(pendingOption);
 
-          //remove pending color
+          // remove pending color
           plantNameInput.classList.remove("text-yellow-600");
           plantLocationInput.classList.remove("text-yellow-600");
           plantDeviceInput.classList.remove("text-yellow-600");
 
-          //set fields with the fields the plant currently has
+          // set fields with the fields the plant currently has
           plantNameInput.value = plant.name;
           plantNameInput.placeholder = plant.name;
 
@@ -522,12 +525,12 @@ function openEditPlantModal(editButton) {
           plantDeviceInput.children[0].append(plant.MAC);
                     
 
-          //allow user to edit form fields
+          // allow user to edit form fields
           plantNameInput.readOnly = false;
           plantLocationInput.readOnly = false;
           plantDeviceInput.disabled = false;
 
-          //automatically selects defualt option
+          // automatically selects defualt option
           plantDeviceInput.value = plant.MAC;
         })
 
