@@ -205,16 +205,10 @@ function clearStatusMessage() {
   }
 }
 
-
-
 // serial device management
-
-
 async function refreshSerialDevices() {
   console.log('Refreshing serial devices...');
   try {
-
-
 
     const refreshBtn = document.getElementById('refresh-devices');
     const refreshIcon = refreshBtn.querySelector('svg');
@@ -506,7 +500,7 @@ function openEditPlantModal(editButton) {
   plantDeviceInput.prepend(pendingOption);
 
 
-  fetch(`api/splant/${plantId}`)
+  fetch(`api/plant/${plantId}`)
     .then(response => response.json())
       .catch(err => {
         console.error("Failed to fetch plant info: " + err);
@@ -540,14 +534,15 @@ function openEditPlantModal(editButton) {
 
           // automatically selects defualt option
           plantDeviceInput.value = plant.MAC;
-        })
 
+          // refresh serial devices
+          refreshEditSerialDevices();
+        })
 
   modal.classList.remove('hidden');
   modal.style.display = 'flex';
   modal.style.alignItems = 'center';
   modal.style.justifyContent = 'center';
-  
   
 }
 
@@ -555,7 +550,7 @@ function openEditPlantModal(editButton) {
 let currentPlantToDelete = null;
 
 function openDeletePlantModal(deleteButton) {
-    const plantCard = getPlantCardFromChild(deleteButton);
+  const plantCard = getPlantCardFromChild(deleteButton);
 
   if (Error.isError(plantCard)) {
     console.error(plantCard.message);
@@ -607,6 +602,7 @@ function openDeletePlantModal(deleteButton) {
     }
   });
 }
+
 function closeEditPlantModal() {
   const modal = document.getElementById('edit-plant-modal');
   modal.classList.add('hidden');
@@ -625,6 +621,53 @@ function closeDeletePlantModal() {
     .getElementById('delete-serial-device-section')
     .classList.add('hidden');
   currentPlantToDelete = null;
+}
+
+async function refreshEditSerialDevices() {
+  try {
+    const refreshBtn = document.getElementById('edit-refresh-devices');
+    const refreshIcon = refreshBtn.querySelector('svg');
+
+    refreshBtn.disabled = true;
+    refreshIcon.style.transform = 'rotate(0deg)';
+    refreshIcon.style.transition = 'transform 0.5s linear';
+
+    let rotation = 0;
+    const spinInterval = setInterval(() => {
+      rotation += 90;
+      refreshIcon.style.transform = `rotate(${rotation}deg)`;
+    }, 100);
+
+    const response = await fetch('/api/serial/ports');
+    const result = await response.json();
+
+    const select = document.getElementById('edit-serial-device');
+
+    if (
+      result.success &&
+      (result.ports?.length > 0 || result.allPorts?.length > 0)
+    ) {
+      const portsToUse =
+        result.ports && result.ports.length > 0
+          ? result.ports
+          : result.allPorts || [];
+
+      portsToUse.forEach((port) => {
+        const option = document.createElement('option');
+        option.value = port.path;
+        option.textContent =
+          port.displayName ||
+          `${port.path} (${port.manufacturer || 'Unknown'})`;
+        select.appendChild(option);
+      });
+    }
+
+    clearInterval(spinInterval);
+    refreshBtn.disabled = false;
+    refreshIcon.style.transform = 'rotate(0deg)';
+  } catch (error) {
+    console.error('Failed to refresh serial devices:', error);
+  }
 }
 
 async function refreshDeleteSerialDevices() {
