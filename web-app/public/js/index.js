@@ -494,6 +494,7 @@ function openEditPlantModal(editButton) {
   });
 
   const modal = document.getElementById('edit-plant-modal');
+  const form = document.getElementById('edit-plant-form');
   const header = document.getElementById('edit-plant-modal-header');
   const headerSpan = document.getElementById('edit-plant-modal-header-span');
 
@@ -533,6 +534,13 @@ function openEditPlantModal(editButton) {
 
   plantDeviceInput.prepend(pendingOption);
 
+  // Bind status message
+  statusMessage.bindedDiv = form;
+
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+  modal.style.alignItems = 'center';
+  modal.style.justifyContent = 'center';
 
   fetch(`api/plant/${plantId}`)
     .then(response => response.json())
@@ -572,11 +580,6 @@ function openEditPlantModal(editButton) {
           // refresh serial devices
           refreshEditSerialDevices();
         })
-
-  modal.classList.remove('hidden');
-  modal.style.display = 'flex';
-  modal.style.alignItems = 'center';
-  modal.style.justifyContent = 'center';
   
 }
 
@@ -642,6 +645,12 @@ function closeEditPlantModal() {
   modal.classList.add('hidden');
   modal.style.display = 'none';
 
+  // Unbind statusMessage
+  statusMessage.bindedDiv = null;
+
+  // Reset form
+  document.getElementById('new-serial-device-confirmation-checkbox').classList.add('hidden');
+  document.getElementById('new-serial-confirmation-div').classList.add('hidden');
 }
 
 function closeDeletePlantModal() {
@@ -701,6 +710,10 @@ async function refreshEditSerialDevices() {
     refreshIcon.style.transform = 'rotate(0deg)';
   } catch (error) {
     console.error('Failed to refresh serial devices:', error);
+    showStatusMessage(
+      'Failed to refresh serial devices. Please try again.',
+      true
+    );
   }
 }
 
