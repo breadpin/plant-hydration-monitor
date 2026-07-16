@@ -421,7 +421,13 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      await configureDevice(formData);
+      const response = await configureDevice(formData, true);
+      if(response == 'success' || response == 'dbfail') {
+        setTimeout(() => {
+          closeRegisterPlantModal();
+          fetchPlants(); // fetches plants from db to refresh
+        }, 4000);
+      }
     });
   }
   const editForm = document.getElementById('edit-plant-form');
