@@ -645,12 +645,12 @@ function closeEditPlantModal() {
   modal.classList.add('hidden');
   modal.style.display = 'none';
 
+  clearStatusMessage();
+
   // Unbind statusMessage
   statusMessage.bindedDiv = null;
 
-  // Reset form
-  document.getElementById('new-serial-device-confirmation-checkbox').classList.add('hidden');
-  document.getElementById('new-serial-confirmation-div').classList.add('hidden');
+  detectedMacAddress = null;
 }
 
 function closeDeletePlantModal() {
