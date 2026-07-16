@@ -77,7 +77,8 @@ bool availableConnectionInfo()
     return true;
 }
 
-/** * Parse a configuration string from the Serial interface, or return
+/** 
+ * Parse a configuration string from the Serial interface, or return
  * false if the proper format was not used. In the case of a failure,
  * a repeated command will succeed if the format is corrected.
  *
@@ -198,7 +199,7 @@ bool saveConfigData(int length)
 /**
  * Slow poll (3s) the Serial interface until a configuration is supplied.
  * Announce that we are awaiting a config on the serial interface every
- * 1 minute, while blinking the onboard LED every 3 seconds;git 
+ * 1 minute, while blinking the onboard LED every 3 seconds.
  */
 void awaitConfigFromSerial()
 {
