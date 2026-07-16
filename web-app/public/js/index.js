@@ -439,10 +439,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // validate
       const requiredFields = [
-        'edit-plant-name',
-        'edit-plant-location',
-        'edit-serial-device',
+        'plant-name',
+        'plant-location',
+        'serial-device'
       ];
+      // see if a new device needs to be configured and add required fields if so
+      // "<current" violates directory naming
+      let shouldConfigure = true;
+      const selectValue = formData.get('serial-device');
+      if(selectValue.substring(0, 8) != "<current") {
+        requiredFields.push('wifi-ssid', 'wifi-password', 'confirmation-checkbox');
+      }
+      else if(selectValue != null && selectValue != "" && selectValue != "null") {
+        // set formData serial device value to MAC address
+        formData.set('serial-device', formData.get('serial-device').substring(8, selectValue.length));
+        shouldConfigure = false;
+      }
+
       const missingFields = requiredFields.filter(
         (field) => !formData.get(field)?.trim()
       );
@@ -462,6 +475,25 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       
+      console.log(shouldConfigure);
+      let configResponse = null;
+      if(shouldConfigure) { 
+        configResponse = await configureDevice(formData, false);
+        formData.set('serial-device', detectedMacAddress);
+      }
+      if(configResponse == 'dbfail') {
+        setTimeout(() => {
+          closeRegisterPlantModal();
+          fetchPlants(); // fetches plants from db to refresh
+        }, 4000);
+      }
+      if(!shouldConfigure || (shouldConfigure && configResponse == 'success')) {
+        await updatePlantInfo(formData);
+        setTimeout(() => {
+          closeEditPlantModal();
+          fetchPlants(); // fetches plants from db to refresh
+        }, 4000);
+      }
     });
   }
 });
@@ -547,17 +579,79 @@ function openEditPlantModal(editButton) {
   const plantLocationInput = document.getElementById('edit-plant-location');
   const plantDeviceInput = document.getElementById('edit-serial-device');
   
+  const configDiv = document.getElementById('config-new-device-div');
+  const confirmationCheckbox = document.getElementById('new-serial-device-confirmation-checkbox');
+  
+  /* Ready form */
+  // header
   header.firstChild.textContent = "Editing plant: ";
   headerSpan.textContent = plantName;
 
+  // inject plantId into hidden input
+  document.getElementById('edit-hidden-plant-id').value = plantId;
+
+  // Hide configure new device inputs  
+  configDiv.classList.add('hidden');
 
   plantNameInput.addEventListener('focus', (e) => {
     plantNameInput.select();
-  })
+  });
   plantLocationInput.addEventListener('focus', (e) => {
     plantLocationInput.select();
-  })
+  });
 
+  // Show new device configuration when anything other than the current device is selected
+  plantDeviceInput.addEventListener('change', (e) => {
+
+    const wifiNameInput = document.getElementById('edit-wifi-ssid');
+    const wifiPasswordInput = document.getElementById('edit-wifi-password');
+
+    if(plantDeviceInput.value == plantDeviceInput.children[0].value) {
+      configDiv.classList.add('hidden');
+
+      //reset checkbox
+      confirmationCheckbox.checked = false;
+
+      //remove required attributes
+      wifiNameInput.required = false;
+      wifiPasswordInput.required = false;
+      confirmationCheckbox.required = false;
+    }
+    else {
+      configDiv.classList.remove('hidden');
+
+      //reset confirmation checkbox
+      confirmationCheckbox.checked = false;
+
+      // reset wifi inputs
+      wifiNameInput.value = null;
+      wifiPasswordInput.value = null;
+
+      // add required attributes
+      wifiNameInput.required = true;
+      wifiPasswordInput.required = true;
+      confirmationCheckbox.required = true;
+
+
+      //Handle show password checkbox
+      const showPasswordCheckbox = document.getElementById("edit-show-password-checkbox");
+      //reset show password checkbox
+      showPasswordCheckbox.checked = false;
+      wifiPasswordInput.type = "password";
+
+      showPasswordCheckbox.addEventListener('change', function () {
+        if(this.checked) {
+          wifiPasswordInput.type = "text";
+        }
+        else {
+          wifiPasswordInput.type = "password";
+        }
+      })
+    }
+  });
+
+
+/* Make form uneditable until the plant is fetched */
   // Make input fields uneditable until plant is fetched
   plantNameInput.readOnly = true;
   plantLocationInput.readOnly = true;
@@ -610,8 +704,9 @@ function openEditPlantModal(editButton) {
           plantLocationInput.value = plant.location;
           plantLocationInput.placeholder = plant.location;
 
-          plantDeviceInput.children[0].value = plant.MAC;
-          plantDeviceInput.children[0].append(plant.MAC);
+          // Set value of current device option and append it.
+          plantDeviceInput.children[0].value = "<current" + plant.MAC;
+          plantDeviceInput.children[0].textContent = `Current Device: ${plant.MAC}`;
                     
 
           // allow user to edit form fields
@@ -730,6 +825,14 @@ async function refreshEditSerialDevices() {
     const result = await response.json();
 
     const select = document.getElementById('edit-serial-device');
+
+    const defaultOption = select.children[0];
+    select.options.length = 0;
+    select.appendChild(defaultOption);
+    
+    // Hide config inputs
+    const configDiv = document.getElementById('config-new-device-div');
+    configDiv.classList.add('hidden');
 
     if (
       result.success &&
