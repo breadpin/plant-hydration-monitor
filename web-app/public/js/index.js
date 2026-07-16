@@ -466,6 +466,33 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
+async function updatePlantInfo(formData) {
+  console.log(formData.get('plant-name'), formData.get('plant-location'), formData.get('serial-device'));
+  const response = await fetch(`/api/plant/${formData.get('plantId')}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: formData.get('plant-name'),
+      location: formData.get('plant-location'),
+      MAC: formData.get('serial-device'),
+    }),
+  });
+  if(!response.ok) {
+    showStatusMessage(
+      "Failed to update plant",
+      true
+    )
+  }
+  else {
+    showStatusMessage(
+      "Successfully updated plant",
+      false
+    )
+  }
+}
+
 // Utility function that returns plant card element of the childElement param
 function getPlantCardFromChild(childElement) {
   // Find the plant card container - traverse up to find the card with plant data
