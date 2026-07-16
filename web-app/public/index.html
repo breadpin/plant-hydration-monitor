@@ -273,48 +273,56 @@
           ></span>
         </h2>
         <form id="edit-plant-form">
+          <input
+            id="edit-hidden-plant-id"
+            type="hidden"
+            name="plantId"
+            value=""
+          />
           <div class="mb-4">
             <label
-              for="edit-plant-name"
+              for="plant-name"
               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
               >Plant Name</label
             >
             <input
               type="text"
               id="edit-plant-name"
-              name="edit-plant-name"
+              name="plant-name"
               class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-zinc-700 dark:text-white"
               required
             />
           </div>
           <div class="mb-4">
             <label
-              for="edit-plant-location"
+              for="plant-location"
               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
               >Location</label
             >
             <input
               type="text"
               id="edit-plant-location"
-              name="edit-plant-location"
+              name="plant-location"
               class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-zinc-700 dark:text-white"
               required
             />
           </div>
           <div class="mb-4">
             <label
-              for="edit-serial-device"
+              for="serial-device"
               class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
               >Device</label
             >
             <div class="flex gap-2">
               <select
                 id="edit-serial-device"
-                name="edit-serial-device"
+                name="serial-device"
                 class="flex-1 min-w-0 px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-zinc-700 dark:text-white"
                 required
               >
-                <option value="">Current Device: </option>
+                <option value="">
+                  <!-- Current Device: *MAC ADDRESS* -->
+                </option>
               </select>
               <button
                 type="button"
@@ -339,18 +347,68 @@
                 </svg>
               </button>
             </div>
+            <div class="mb-2">
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Connect your Arduino/ESP8266 device via USB and click refresh
               </p>
-            <div class="flex items-center" id="new-serial-confirmation-div">            
-              <input 
-                  type="checkbox"
-                  id="new-serial-device-confirmation-checkbox"
-                  class="mr-2 mt-2 rounded border-gray-400"
-              />
-              <p class="text-xs font-medium text-yellow-600 dark:text-yellow-400 mt-2">
-                  Are you sure you want to rebind the plant data to a new serial device? (This will require you to configure a new device)
-              </p>
+            </div>
+            <div id="config-new-device-div">
+              <div 
+                class="flex"
+                >
+                <div class="w-[20%]"></div>
+                <div class="w-full">
+                  <label
+                    for="wifi-ssid"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                    >WiFi SSID</label
+                  >
+                  <input
+                    type="text"
+                    id="edit-wifi-ssid"
+                    name="wifi-ssid"
+                    class=" w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-zinc-700 dark:text-white"
+                  />
+                  <div class="mb-4">
+                    <label
+                      for="wifi-password"
+                      class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                      >WiFi Password</label
+                    >
+                    <input
+                      type="password"
+                      id="edit-wifi-password"
+                      name="wifi-password"
+                      autocomplete="current-password"
+                      class="w-full px-3 py-2 border border-gray-300 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-zinc-700 dark:text-white"
+                    />
+                    <div class="flex items-center">
+                      <input 
+                        type="checkbox"
+                        id="edit-show-password-checkbox"
+                        class="mr-2 mt-2 rounded border-gray-400"
+                      />
+                      <p class="text-xs font-medium text-gray-700 dark:text-gray-400 mt-1">
+                        Show password
+                      </p>
+                    </div>
+                    <p class="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
+                      Password is transmitted in plain text over local network
+                    </p>
+                  </div>  
+                </div>
+              </div>
+              <div class="flex items-center" id="new-serial-confirmation-div">            
+                <input 
+                    type="checkbox"
+                    id="new-serial-device-confirmation-checkbox"
+                    name="confirmation-checkbox"
+                    class="mr-2 mt-2 rounded border-gray-400"
+                />
+                <p class="text-xs font-medium text-red-600 dark:text-red-400 mt-2">
+                    Are you sure you want to rebind the plant data to a new serial device? (This will require you to configure a new device)
+                </p>
+              </div>
             </div>
           </div>
           <div class="flex justify-between items-center">
