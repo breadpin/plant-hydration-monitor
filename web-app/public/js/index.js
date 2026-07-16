@@ -78,6 +78,14 @@ function createPlantCard(plant, saturationData) {
 const fetchPlants = async () => {
   try {
     const plantsResponse = await fetch('/api/plants');
+    if(!plantsResponse.ok) {
+      throw new Error(
+        JSON.stringify({
+          status: plantsResponse.status,
+          statusText: plantsResponse.statusText,
+        })
+      );
+    }
     const plants = await plantsResponse.json();
 
     // fetch all saturation data in parallel
