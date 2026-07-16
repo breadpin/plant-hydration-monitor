@@ -292,8 +292,11 @@ async function refreshSerialDevices() {
 
 // serial communication functionality
 let detectedMacAddress = null;
-
-async function configureDevice(formData) {
+/*
+* @return
+* "success" when configured or registered in db. "dbfail" when configured and failed db registration. void otherwise 
+*/
+async function configureDevice(formData, shouldRegisterInDatabase) {
   try {
     showStatusMessage('Connecting to device and sending configuration...');
 
@@ -331,6 +334,7 @@ async function configureDevice(formData) {
         `Device configured successfully! MAC address: ${macAddress}. Configuration sent: ${result.configSent}`
       );
 
+      if(shouldRegisterInDatabase) {
       // register the plant in the database
       try {
         showStatusMessage('Saving plant to database...');
@@ -353,6 +357,7 @@ async function configureDevice(formData) {
           showStatusMessage(
             `Plant "${plantResult.name}" successfully registered and configured! MAC Address: ${macAddress}`
           );
+            return 'success';
         } else {
           showStatusMessage(
             `Device configured but failed to save plant to database: ${
@@ -360,6 +365,7 @@ async function configureDevice(formData) {
             }`,
             true
           );
+            return 'dbfail';
         }
       } catch (dbError) {
         console.error('Database error:', dbError);
@@ -368,11 +374,9 @@ async function configureDevice(formData) {
           true
         );
       }
-
-      setTimeout(() => {
-        closeRegisterPlantModal();
-        fetchPlants(); // fetches plants from db to refresh
-      }, 4000);
+      } else {
+        return 'success';
+      }
     } else {
       showStatusMessage(`Configuration failed: ${result.message}`, true);
     }
