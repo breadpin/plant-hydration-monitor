@@ -5,6 +5,9 @@
 
 #define ONBOARD_LED 2
 
+// Humidity Sensor pin setup
+DHT11 dht11(2);
+
 // NOTE: Change these values to the WiFi values for your personal WiFi
 // char SSID[] =  ""; // Your current WiFi network SSID (can be hidden)
 // char PASS[] =  ""; // Your current WiFi network password
