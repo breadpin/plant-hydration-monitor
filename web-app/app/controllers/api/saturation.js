@@ -12,7 +12,6 @@ module.exports = function (app) {
  *   Array of objects with properties [plant_id, moisture, created_at, updated_at]
  */
 router.get('/saturation/:plant_id', async function (req, res, next) {
-  console.log('here');
   // TODO: Handle a bad request more robustly
   const result = await db.Moisture.findAll({
     where: { plantId: req.params.plant_id },
