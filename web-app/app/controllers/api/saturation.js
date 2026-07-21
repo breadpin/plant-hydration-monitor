@@ -96,9 +96,14 @@ router.post('/saturation', async function (req, res, next) {
     plantId: plant.id,
     moisture: saturation,
   });
-  await moisture.save();
+  const newMoistureInstance = await moisture.save();
+  console.log(`New moisture instance with value: ${newMoistureInstance.moisture} from ${newMoistureInstance.createdAt}`);
 
-  const newVals = await plant.getMoisture();
+  const allMoistureVals = await plant.getMoisture();
+  console.log("List of moisture values from every instance: ");
+  for (let n = 0; n < allMoistureVals.length; n++) {
+    console.log(`${n}: ${newVals[n].moisture} from ${newVals[n].createdAt}`);
+  }
   for (let n = 0; n < newVals.length; n++) {
     console.log(`${n}: ${newVals[n].moisture} from ${newVals[n].createdAt}`);
   }
