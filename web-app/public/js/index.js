@@ -779,6 +779,54 @@ function openDeletePlantModal(deleteButton) {
     }
   });
 }
+async function updateBindings() {
+  showStatusMessage("Updating bindings");
+
+  const bindedDevicesDiv = document.getElementById('binded-devices');
+
+  let plantsUpdated = [];
+
+  //i=1 skip template
+  for(let i = 1; i < bindedDevicesDiv.children.length; i++) {
+    const currentBindingCard = bindedDevicesDiv.children[i];
+
+    const plantId = currentBindingCard.dataset.plantId;
+    const plantName = currentBindingCard.dataset.fullName;
+    const plantLocation = currentBindingCard.dataset.location;
+    const bindedMac = currentBindingCard.querySelector('[data-field="draggable-mac-address"]').dataset.mac;
+
+    showStatusMessage("Updating bindings for plant: " + plantName);
+    try {
+      const response = await fetch(`/api/plant/${plantId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: plantName,
+            location: plantLocation,
+            MAC: bindedMac,
+          }),
+        });
+      plantsUpdated.push(
+        {
+          plantName: plantName,
+          bindedMac: bindedMac
+        }
+      );
+    } catch(err) {
+      console.error("Error attempting to update plant: " + plantName + " with id: " + plantId);
+      showStatusMessage("Failed to update bindings for plant: " + plantName, true);
+      setTimeout(() => {}, 1000);
+    }
+  }
+  console.log(plantsUpdated);
+  let updatedPlantsStr = "Successfully updated plants: ";
+  plantsUpdated.forEach(binding => {
+    updatedPlantsStr = updatedPlantsStr + binding.plantName + " with MAC Address " + binding.bindedMac + ", ";
+  });
+  showStatusMessage(updatedPlantsStr);
+}
 
 function closeEditPlantModal() {
   const modal = document.getElementById('edit-plant-modal');
