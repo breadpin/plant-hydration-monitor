@@ -356,7 +356,25 @@ void loop()
 
   double averageOfReads = (static_cast<double>(totSum) / NUM_READS);
   int moisture = std::round(averageOfReads);
-  Serial.printf("Done: %i\n", moisture);
+
+  // Humidity sensor
+  int temperature = 0;
+  int humidity = 0;
+
+  // Return of zero means successful
+  int humiditySensorResult = dht11.readTemperatureHumidity(temperature, humidity);
+
+  // Try 10 more times to read humidity sensor data if initial read fails 
+  int iteration = 0;
+  int humidityFailReadDelay = 200; // TODO: should this be global variable 
+  while(humiditySensorResult != 0 && iteration < 10) {
+    Serial.printf("Humidity Sensor failed, trying again... %i");
+    humiditySensorResult = dht11.readTemperatureHumidity(temperature, humidity);
+
+    delay(humidityFailReadDelay);
+
+    iteration++;
+  }
 
   // Get server configuration from EEPROM
   ModuleConfig config;
