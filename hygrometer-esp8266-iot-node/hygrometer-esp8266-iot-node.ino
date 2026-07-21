@@ -341,6 +341,7 @@ void setup()
 
 void loop()
 {
+  // Moisture Sensor
   // Start our read process and turn on the LED
   Serial.println("Starting soil moisture measurement...");
   digitalWrite(ONBOARD_LED, LOW);
@@ -379,6 +380,8 @@ void loop()
     iteration++;
   }
 
+  Serial.printf("Done. Moisture: %i\nTemperature: %i\nHumidity: %i", moisture, temperature, humidity);
+
   // Get server configuration from EEPROM
   ModuleConfig config;
   EEPROM.get(0, config);
@@ -390,7 +393,7 @@ void loop()
   delay(100);
 
   // Open a basic HTTP connection to the server
-  Serial.printf("Attempted to report moisture value of '%i' to server at: %d.%d.%d.%d:%i\n",
+  Serial.printf("\nAttempted to report moisture value of '%i' to server at: %d.%d.%d.%d:%i\n",
                 moisture, config.server[0], config.server[1], 
                 config.server[2], config.server[3], SERVER_PORT);
   if (client.connect(IPAddress(config.server[0], config.server[1], 
