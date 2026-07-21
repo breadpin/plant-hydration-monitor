@@ -335,45 +335,45 @@ async function configureDevice(formData, shouldRegisterInDatabase) {
       );
 
       if(shouldRegisterInDatabase) {
-      // register the plant in the database
-      try {
-        showStatusMessage('Saving plant to database...');
+        // register the plant in the database
+        try {
+          showStatusMessage('Saving plant to database...');
 
-        const plantResponse = await fetch('/api/plants', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: formData.get('plant-name'),
-            location: formData.get('plant-location'),
-            MAC: macAddress,
-          }),
-        });
+          const plantResponse = await fetch('/api/plants', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: formData.get('plant-name'),
+              location: formData.get('plant-location'),
+              MAC: macAddress,
+            }),
+          });
 
-        const plantResult = await plantResponse.json();
+          const plantResult = await plantResponse.json();
 
-        if (plantResponse.ok) {
-          showStatusMessage(
-            `Plant "${plantResult.name}" successfully registered and configured! MAC Address: ${macAddress}`
-          );
+          if (plantResponse.ok) {
+            showStatusMessage(
+              `Plant "${plantResult.name}" successfully registered and configured! MAC Address: ${macAddress}`
+            );
             return 'success';
-        } else {
+          } else {
+            showStatusMessage(
+              `Device configured but failed to save plant to database: ${
+                plantResult.error || 'Unknown error'
+              }`,
+              true
+            );
+            return 'dbfail';
+          }
+        } catch (dbError) {
+          console.error('Database error:', dbError);
           showStatusMessage(
-            `Device configured but failed to save plant to database: ${
-              plantResult.error || 'Unknown error'
-            }`,
+            `Device configured but failed to save plant to database: ${dbError.message}`,
             true
           );
-            return 'dbfail';
         }
-      } catch (dbError) {
-        console.error('Database error:', dbError);
-        showStatusMessage(
-          `Device configured but failed to save plant to database: ${dbError.message}`,
-          true
-        );
-      }
       } else {
         return 'success';
       }
@@ -577,7 +577,7 @@ function openEditPlantModal(editButton) {
   const plantNameInput = document.getElementById('edit-plant-name');
   const plantLocationInput = document.getElementById('edit-plant-location');
   const plantDeviceInput = document.getElementById('edit-serial-device');
-  
+
   const configDiv = document.getElementById('config-new-device-div');
   const confirmationCheckbox = document.getElementById('new-serial-device-confirmation-checkbox');
   
