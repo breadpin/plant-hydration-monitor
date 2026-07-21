@@ -5,7 +5,7 @@ const {
 module.exports = (sequelize, DataTypes) => {
     class Humidity extends Model {
         static associate(models) {
-        Moisture.belongsTo(models.Plant, {
+        Humidity.belongsTo(models.Plant, {
             foreignKey: "plantId",
             as: 'plant',
             onDelete: 'cascade',
