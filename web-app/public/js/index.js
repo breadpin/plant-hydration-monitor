@@ -474,7 +474,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      
       console.log(shouldConfigure);
       let configResponse = null;
       if(shouldConfigure) { 
