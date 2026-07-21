@@ -684,6 +684,7 @@ function openEditPlantModal(editButton) {
     .then(response => response.json())
       .catch(err => {
         console.error("Failed to fetch plant info: " + err);
+        showStatusMessage("Failed to fetch plant info: " + err, true);
         throw err;
       })
         .then(plant => {
