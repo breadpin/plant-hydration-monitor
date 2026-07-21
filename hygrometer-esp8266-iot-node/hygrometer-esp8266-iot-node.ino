@@ -1,6 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <EEPROM.h>
 #include <cmath>
+#include <DHT11.h>
+
 #define ONBOARD_LED 2
 
 // NOTE: Change these values to the WiFi values for your personal WiFi
