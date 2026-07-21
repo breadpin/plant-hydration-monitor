@@ -62,18 +62,30 @@ router.get('/saturation/:plant_id/last', async function (req, res, next) {
  * Create a new saturation value for a plant.
  */
 router.post('/saturation', async function (req, res, next) {
-  const saturation = req.body.sensorVal;
+  const moistureValue = req.body.sensorVal;
   const macAddress = req.body.macAddress;
 
-  console.log('Received Saturation Value:', saturation);
+  const humidityPercentValue = req.body.humidityPercentVal;
+  const temperatureValue = req.body.temperatureVal;
+
+  console.log('Received Saturation Value:', moistureValue);
+  console.log('Received Humidity value: ', humidityPercentValue);
+  console.log('Received temperature value: ', temperatureValue);
   console.log('From MAC Address:', macAddress);
 
-  if (!saturation) {
+  // Humidity and temperature are not required
+  if (!moistureValue) {
     return res.status(400).json({ error: 'sensorVal is required' });
   }
 
   if (!macAddress) {
     return res.status(400).json({ error: 'macAddress is required' });
+  }
+  if(!temperatureValue) {
+    console.log("No temperature value");
+  }
+  if(!humidityPercentValue) {
+    console.log("No humidity value");
   }
 
   // Get our target plant (based on MAC address of POST request)
@@ -91,22 +103,55 @@ router.post('/saturation', async function (req, res, next) {
       });
   }
 
-  // Create a new Moisture Value
+  // Create a new Moisture instance
   const moisture = await db.Moisture.create({
     plantId: plant.id,
-    moisture: saturation,
+    moisture: moistureValue,
   });
+  
   const newMoistureInstance = await moisture.save();
   console.log(`New moisture instance with value: ${newMoistureInstance.moisture} from ${newMoistureInstance.createdAt}`);
 
   const allMoistureVals = await plant.getMoisture();
   console.log("List of moisture values from every instance: ");
   for (let n = 0; n < allMoistureVals.length; n++) {
-    console.log(`${n}: ${newVals[n].moisture} from ${newVals[n].createdAt}`);
+    console.log(`${n}: ${allMoistureVals[n].moisture} from ${allMoistureVals[n].createdAt}`);
   }
-  for (let n = 0; n < newVals.length; n++) {
-    console.log(`${n}: ${newVals[n].moisture} from ${newVals[n].createdAt}`);
+
+  if(humidityPercentValue) {
+    // Create a new Humidity instance
+    const humidity = await db.Humidity.create({
+      plantId: plant.id,
+      humidity: humidityPercentValue,
+    })
+  
+    const newHumidityInstance = await moisture.save();
+    console.log(`New humidity instance with value: ${newHumidityInstance.humidity} from ${newHumidityInstance.createdAt}`);
+
+    const allHumidityVals = await plant.getHumidity();
+    console.log("List of humidity values from every instance: ");
+    for (let n = 0; n < allHumidityVals.length; n++) {
+      console.log(`${n}: ${allHumidityVals[n].humidity} from ${allHumidityVals[n].createdAt}`);
+    }
   }
+  
+  if(temperatureValue) {
+    // Create a new Temperature instance
+    const temperature = await db.Temperature.create({
+      plantId: plant.id,
+      temperature: temperatureValue,
+    })
+  
+    const newTemperatureInstance = await moisture.save();
+    console.log(`New temperature instance with value: ${newTemperatureInstance.temperature} from ${newTemperatureInstance.createdAt}`);
+
+    const allTemperatureVals = await plant.getTemperature();
+    console.log("List of temperature values from every instance: ");
+    for (let n = 0; n < allTemperatureVals.length; n++) {
+      console.log(`${n}: ${allTemperatureVals[n].temperature} from ${allTemperatureVals[n].createdAt}`);
+    }
+  }
+
 
   res.json({
     message: 'SUCCESS',
