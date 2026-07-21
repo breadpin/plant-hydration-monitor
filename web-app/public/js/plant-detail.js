@@ -89,7 +89,8 @@ class PlantDetailView {
       let data = [];
 
       if (response.ok) {
-        data = await response.json();
+        const allSaturationData = await response.json();
+        data = allSaturationData.moisture;
         console.log('Loaded saturation data:', data);
       } else {
         console.warn('No saturation data found');
@@ -291,7 +292,8 @@ class PlantDetailView {
         throw new Error('Failed to fetch saturation data', response.statusText);
       }
 
-      const data = await response.json();
+      const allSaturationData = await response.json();
+      const data = allSaturationData.moisture;
 
       if (this.moistureChart) {
         const chartData = data.map((reading) => ({
