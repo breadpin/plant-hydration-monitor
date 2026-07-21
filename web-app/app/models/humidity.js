@@ -21,5 +21,5 @@ module.exports = (sequelize, DataTypes) => {
         sequelize,
         modelName: 'Humidity',
     });
-    return Moisture;
+    return Humidity;
 };
