@@ -402,6 +402,10 @@ void loop()
     // Create our POST request message Body content with MAC address
     String postStr = "sensorVal=";
     postStr += String(moisture);
+    postStr += "&humidityPercentVal=";
+    postStr += String(humidity);
+    postStr += "&temperatureVal=";
+    postStr += String(temperature);
     postStr += "&macAddress=";
     postStr += WiFi.macAddress();
 
