@@ -89,12 +89,13 @@ router.get('/saturation/:plant_id/last', async function (req, res, next) {
 });
 
 /**
- * Create new values for a plant.
+ * Create new moisture, humidity, and temperature value for a plant.
  */
 router.post('/saturation', async function (req, res, next) {
-  const moistureValue = req.body.sensorVal;
+  
   const macAddress = req.body.macAddress;
 
+  const moistureValue = req.body.sensorVal;
   const humidityPercentValue = req.body.humidityPercentVal;
   const temperatureValue = req.body.temperatureVal;
 
