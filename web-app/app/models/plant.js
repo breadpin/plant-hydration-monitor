@@ -9,6 +9,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "plantId",
         as: 'moisture',
       });
+      Plant.hasMany(models.Temperature, { 
+        foreignKey: "plantId",
+        as: 'temperature',
+      });
+      Plant.hasMany(models.Humidity, { 
+        foreignKey: "plantId",
+        as: 'humidity',
+      });
     }
   }
   Plant.init({
