@@ -9,11 +9,20 @@ module.exports = function (app) {
 /**
  * Return all saturation values for a single plant.
  * @return
- *   Array of objects with properties [plant_id, moisture, created_at, updated_at]
+ *  object with the object arrays moisture, humidity, and temperature.
+ *    moisture: [
+ *      { plant_id, moisture, created_at, updated_at }
+ *    ], 
+ *    humidity: [
+ *      { plant_id, humidity, created_at, updated_at }
+ *    ], 
+ *    temperature: [
+ *      { plant_id, temperature, created_at, updated_at }
+ *    ]
  */
 router.get('/saturation/:plant_id', async function (req, res, next) {
   // TODO: Handle a bad request more robustly
-  const result = await db.Moisture.findAll({
+  const moistureResult = await db.Moisture.findAll({
     where: { plantId: req.params.plant_id },
   });
 
@@ -22,18 +31,40 @@ router.get('/saturation/:plant_id', async function (req, res, next) {
   // but the plant might not exist at all
 
   let moistureValues = [];
-  result.forEach((obj) => {
+  moistureResult.forEach((obj) => {
     moistureValues.push(obj.toJSON());
   });
-
+  // moisture values are necessary
   if (moistureValues.length === 0) {
     return res
       .status(404)
       .json({ error: 'No moisture values found for this plant' });
   }
+  
+  const humidityResult = await db.Humidity.findAll({
+    where: { plantId: req.params.plant_id },
+  });
+  let humidityValues = [];
+  humidityResult.forEach((obj) => {
+    humidityValues.push(obj.toJSON());
+  });
+  
+  const temperatureResult = await db.Temperature.findAll({
+    where: { plantId: req.params.plant_id }
+  });
+  let temperatureValues = [];
+  temperatureResult.forEach((obj) => {
+    temperatureValues.push(obj.toJSON());
+  });
+  
+  const response = {
+    moisture: moistureValues,
+    humidity: humidityValues,
+    temperature: temperatureResult
+  }
 
-  console.log(moistureValues);
-  res.json(moistureValues);
+  console.log(response);
+  res.json(response);
 });
 
 /**
