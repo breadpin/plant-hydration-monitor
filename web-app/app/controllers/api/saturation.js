@@ -63,7 +63,6 @@ router.get('/saturation/:plant_id', async function (req, res, next) {
     temperature: temperatureResult
   }
 
-  console.log(response);
   res.json(response);
 });
 
