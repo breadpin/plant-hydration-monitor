@@ -40,12 +40,13 @@ class PlantDetailView {
       const saturationResponse = await fetch(
         `/api/saturation/${this.plantId}/last`
       );
-      let latestSaturation = null;
+      let latestMoisture = null;
       if (saturationResponse.ok) {
-        latestSaturation = await saturationResponse.json();
+        const latestSaturation = await saturationResponse.json();
+        latestMoisture = latestSaturation.moisture; 
       }
 
-      this.updatePlantInfo(plant, latestSaturation);
+      this.updatePlantInfo(plant, latestMoisture);
     } catch (error) {
       console.error('Error loading plant data:', error);
     }

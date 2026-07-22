@@ -105,10 +105,10 @@ const fetchPlants = async () => {
     cardContainer.innerHTML = '';
     plants.forEach((plant, index) => {
       const saturationResult = saturationResults[index];
-      const saturationData =
-        saturationResult.status === 'fulfilled' ? saturationResult.value : null;
+      const moistureData =
+        saturationResult.status === 'fulfilled' ? saturationResult.value.moisture : null;
 
-      const cardElement = createPlantCard(plant, saturationData);
+      const cardElement = createPlantCard(plant, moistureData);
       cardContainer.appendChild(cardElement);
     });
   } catch (error) {
