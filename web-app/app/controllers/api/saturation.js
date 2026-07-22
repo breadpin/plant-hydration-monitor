@@ -155,7 +155,7 @@ router.post('/saturation', async function (req, res, next) {
       humidity: humidityPercentValue,
     })
   
-    const newHumidityInstance = await moisture.save();
+    const newHumidityInstance = await humidity.save();
     console.log(`New humidity instance with value: ${newHumidityInstance.humidity} from ${newHumidityInstance.createdAt}`);
 
   //   const allHumidityVals = await plant.getHumidity();
@@ -172,7 +172,7 @@ router.post('/saturation', async function (req, res, next) {
       temperature: temperatureValue,
     })
   
-    const newTemperatureInstance = await moisture.save();
+    const newTemperatureInstance = await temperature.save();
     console.log(`New temperature instance with value: ${newTemperatureInstance.temperature} from ${newTemperatureInstance.createdAt}`);
 
     // const allTemperatureVals = await plant.getTemperature();
