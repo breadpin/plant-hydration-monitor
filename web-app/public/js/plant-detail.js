@@ -109,7 +109,7 @@ class PlantDetailView {
       document.getElementById('current-temperature').textContent =
         temperatureData.temperature;
 
-      const status = this.getTemperatureFarenheit(temperatureData.temperature);
+      const status = this.getTemperatureFarenheit(temperatureData.temperature)  + "°F";
       const statusElement = document.getElementById('temperature-status');
       statusElement.textContent = status;
       statusElement.className = `mt-2 text-sm font-medium ${this.getStatusColor(
@@ -314,7 +314,7 @@ class PlantDetailView {
     return 'Very Dry';
   }
   getTemperatureFarenheit(temperatureCelsius) {
-    return Math.round((temperatureCelsius * 1.8) + 32) + "°F";
+    return Math.round((temperatureCelsius * 1.8) + 32);
   }
 
   getStatusColor(percentage) {
