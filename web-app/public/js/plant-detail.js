@@ -126,18 +126,17 @@ class PlantDetailView {
     try {
       // load all saturation data for this plant
       const response = await fetch(`/api/saturation/${this.plantId}`);
-      let data = [];
+      let allSaturationData;
 
       if (response.ok) {
-        const allSaturationData = await response.json();
-        data = allSaturationData.moisture;
-        console.log('Loaded saturation data:', data);
+        allSaturationData = await response.json();
+        console.log('Loaded saturation data:', allSaturationData);
       } else {
         console.warn('No saturation data found');
       }
 
-      this.createMoistureChart(data);
-      this.populateReadingsTable([...data].reverse()); // reverse to show latest first
+      this.createMoistureChart(allSaturationData.moisture);
+      this.populateReadingsTable(allSaturationData);
     } catch (error) {
       console.error('Error loading chart data:', error);
     }
@@ -244,10 +243,14 @@ class PlantDetailView {
   }
 
   populateReadingsTable(readings) {
+    const moistureReadings = readings.moisture;
+    const humidityReadings = readings.humidity;
+    const temperatureReadings = readings.temperature;
+
     const tbody = document.getElementById('readings-table');
     tbody.innerHTML = '';
 
-    if (!readings || readings.length === 0) {
+    if (!moistureReadings || moistureReadings.length === 0) {
       tbody.innerHTML = `
         <tr>
           <td colspan="4" class="px-6 py-4 text-center text-gray-500">
@@ -258,9 +261,11 @@ class PlantDetailView {
       return;
     }
 
-    readings.forEach((reading) => {
+    // There are the same amount of temperature and humidity readings as moisture readings 
+    // Reverse to show newest first
+    moistureReadings.reverse().forEach((moistureReading, i) => {
       const moisturePercentage = Math.round(
-        ((1023 - reading.moisture) / 1023) * 100
+        ((1023 - moistureReading.moisture) / 1023) * 100
       );
       const status = this.getMoistureStatus(moisturePercentage);
       const statusColor = this.getStatusColor(moisturePercentage);
@@ -268,13 +273,19 @@ class PlantDetailView {
       const row = document.createElement('tr');
       row.innerHTML = `
         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-          ${new Date(reading.createdAt).toLocaleString()}
+          ${new Date(moistureReading.createdAt).toLocaleString()}
         </td>
         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-          ${reading.moisture}
+          ${moistureReading.moisture}
         </td>
         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
           ${moisturePercentage}%
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+          ${humidityReadings[i].humidity}%
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+          ${temperatureReadings[i].temperature}°C
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
           <span class="text-sm font-medium ${statusColor}">${status}</span>
@@ -343,10 +354,9 @@ class PlantDetailView {
       }
 
       const allSaturationData = await response.json();
-      const data = allSaturationData.moisture;
 
       if (this.moistureChart) {
-        const chartData = data.map((reading) => ({
+        const chartData = allSaturationData.moisture.map((reading) => ({
           x: new Date(reading.createdAt),
           y: Math.round(((1023 - reading.moisture) / 1023) * 100),
         }));
@@ -355,7 +365,7 @@ class PlantDetailView {
         this.moistureChart.update('none'); // no animation
       }
 
-      this.populateReadingsTable([...data].reverse()); // reverse to show latest first
+      this.populateReadingsTable(allSaturationData);
 
       console.log('Plant data refreshed successfully');
     } catch (error) {
