@@ -40,28 +40,32 @@ class PlantDetailView {
       const saturationResponse = await fetch(
         `/api/saturation/${this.plantId}/last`
       );
-      let latestMoisture = null;
+      let latestSaturation = null;
       if (saturationResponse.ok) {
-        const latestSaturation = await saturationResponse.json();
-        latestMoisture = latestSaturation.moisture; 
+        latestSaturation = await saturationResponse.json();
       }
 
-      this.updatePlantInfo(plant, latestMoisture);
+      this.updatePlantInfo(plant, latestSaturation);
     } catch (error) {
       console.error('Error loading plant data:', error);
     }
   }
 
-  updatePlantInfo(plant, saturation) {
+  updatePlantInfo(plant, latestSaturation) {
+    const moistureData = latestSaturation.moisture;
+    const humidityData = latestSaturation.humidity;
+    const temperatureData = latestSaturation.temperature;
+
     document.getElementById('plant-name').textContent =
       plant.name || 'Plant Details';
     document.getElementById('plant-location').textContent =
       plant.location || 'Not specified';
     document.getElementById('plant-mac').textContent = plant.MAC || 'Unknown';
 
-    if (saturation) {
+
+    if (moistureData) {
       const moisturePercentage = Math.round(
-        ((1023 - saturation.moisture) / 1023) * 100
+        ((1023 - moistureData.moisture) / 1023) * 100
       );
       document.getElementById('current-moisture').textContent =
         moisturePercentage;
@@ -73,13 +77,47 @@ class PlantDetailView {
         moisturePercentage
       )}`;
 
-      const lastUpdated = new Date(saturation.createdAt);
+      const lastUpdated = new Date(moistureData.createdAt);
       document.getElementById('last-updated').textContent =
         lastUpdated.toLocaleString();
     } else {
       document.getElementById('current-moisture').textContent = '--';
       document.getElementById('moisture-status').textContent = 'No Data';
       document.getElementById('last-updated').textContent = 'Never';
+    }
+    
+    if (humidityData) {
+      const humidityPercentage = humidityData.humidity;
+      document.getElementById('current-humidity').textContent =
+        humidityPercentage
+
+      const status = this.getHumidityStatus(humidityPercentage);
+      const statusElement = document.getElementById('humidity-status');
+      statusElement.textContent = status;
+      statusElement.className = `mt-2 text-sm font-medium ${this.getStatusColor(
+        humidityPercentage
+      )}`;
+
+    } else {
+      document.getElementById('current-humidity').textContent = '--';
+      document.getElementById('humidity-status').textContent = 'No Data';
+    }
+
+    if (temperatureData) {
+      const temperaturePercentage = Math.round((1 - temperatureData.temperature / 37.8) * 100);
+      document.getElementById('current-temperature').textContent =
+        temperatureData.temperature;
+
+      const status = this.getTemperatureFarenheit(temperatureData.temperature);
+      const statusElement = document.getElementById('temperature-status');
+      statusElement.textContent = status;
+      statusElement.className = `mt-2 text-sm font-medium ${this.getStatusColor(
+        temperaturePercentage
+      )}`;
+
+    } else {
+      document.getElementById('current-temperature').textContent = '--';
+      document.getElementById('temperature-status').textContent = 'No Data';
     }
   }
 
@@ -255,6 +293,16 @@ class PlantDetailView {
     if (percentage >= 40) return 'Moderate';
     if (percentage >= 20) return 'Low Moisture';
     return 'Very Dry';
+  }
+  getHumidityStatus(percentage) {
+    if (percentage >= 80) return 'Very Humid';
+    if (percentage >= 60) return 'Quite Humid';
+    if (percentage >= 40) return 'Moderately Humid';
+    if (percentage >= 20) return 'Low Humidity';
+    return 'Very Dry';
+  }
+  getTemperatureFarenheit(temperatureCelsius) {
+    return Math.round((temperatureCelsius * 1.8) + 32) + "°F";
   }
 
   getStatusColor(percentage) {
