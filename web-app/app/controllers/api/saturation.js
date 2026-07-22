@@ -142,11 +142,11 @@ router.post('/saturation', async function (req, res, next) {
   const newMoistureInstance = await moisture.save();
   console.log(`New moisture instance with value: ${newMoistureInstance.moisture} from ${newMoistureInstance.createdAt}`);
 
-  const allMoistureVals = await plant.getMoisture();
-  console.log("List of moisture values from every instance: ");
-  for (let n = 0; n < allMoistureVals.length; n++) {
-    console.log(`${n}: ${allMoistureVals[n].moisture} from ${allMoistureVals[n].createdAt}`);
-  }
+  // const allMoistureVals = await plant.getMoisture();
+  // console.log("List of moisture values from every instance: ");
+  // for (let n = 0; n < allMoistureVals.length; n++) {
+  //   console.log(`${n}: ${allMoistureVals[n].moisture} from ${allMoistureVals[n].createdAt}`);
+  // }
 
   if(humidityPercentValue) {
     // Create a new Humidity instance
@@ -158,11 +158,11 @@ router.post('/saturation', async function (req, res, next) {
     const newHumidityInstance = await moisture.save();
     console.log(`New humidity instance with value: ${newHumidityInstance.humidity} from ${newHumidityInstance.createdAt}`);
 
-    const allHumidityVals = await plant.getHumidity();
-    console.log("List of humidity values from every instance: ");
-    for (let n = 0; n < allHumidityVals.length; n++) {
-      console.log(`${n}: ${allHumidityVals[n].humidity} from ${allHumidityVals[n].createdAt}`);
-    }
+  //   const allHumidityVals = await plant.getHumidity();
+  //   console.log("List of humidity values from every instance: ");
+  //   for (let n = 0; n < allHumidityVals.length; n++) {
+  //     console.log(`${n}: ${allHumidityVals[n].humidity} from ${allHumidityVals[n].createdAt}`);
+  //   }
   }
   
   if(temperatureValue) {
@@ -175,11 +175,11 @@ router.post('/saturation', async function (req, res, next) {
     const newTemperatureInstance = await moisture.save();
     console.log(`New temperature instance with value: ${newTemperatureInstance.temperature} from ${newTemperatureInstance.createdAt}`);
 
-    const allTemperatureVals = await plant.getTemperature();
-    console.log("List of temperature values from every instance: ");
-    for (let n = 0; n < allTemperatureVals.length; n++) {
-      console.log(`${n}: ${allTemperatureVals[n].temperature} from ${allTemperatureVals[n].createdAt}`);
-    }
+    // const allTemperatureVals = await plant.getTemperature();
+    // console.log("List of temperature values from every instance: ");
+    // for (let n = 0; n < allTemperatureVals.length; n++) {
+    //   console.log(`${n}: ${allTemperatureVals[n].temperature} from ${allTemperatureVals[n].createdAt}`);
+    // }
   }
 
 
