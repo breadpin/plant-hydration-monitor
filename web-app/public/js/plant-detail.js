@@ -104,6 +104,7 @@ class PlantDetailView {
     }
 
     if (temperatureData) {
+      // Lower temperatures are blue, higher temperatures are red
       const temperaturePercentage = Math.round((1 - temperatureData.temperature / 37.8) * 100);
       document.getElementById('current-temperature').textContent =
         temperatureData.temperature;
