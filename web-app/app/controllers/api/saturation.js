@@ -73,12 +73,13 @@ router.get('/saturation/:plant_id', async function (req, res, next) {
  */
 router.get('/saturation/:plant_id/last', async function (req, res, next) {
   // TODO: Handle a bad request more robustly
-  const moistureValues = await db.Moisture.findOne({
+  const moistureInstance = await db.Moisture.findOne({
     where: { plantId: req.params.plant_id },
     order: [['createdAt', 'DESC']],
   });
 
-  if (!moistureValues) {
+  // moisture instance is necessary
+  if (!moistureInstance) {
     return res
       .status(404)
       .json({ error: 'No moisture values found for this plant' });
