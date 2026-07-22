@@ -69,7 +69,12 @@ router.get('/saturation/:plant_id', async function (req, res, next) {
 /**
  * Return the most recent recorded saturation
  * @return
- *   Single Object with properties [plant_id, moisture, created_at, updated_at]
+ *    object with objects moisture, humidity, temperature 
+ *      {
+ *        moisture: { plant_id, moisture, created_at, updated_at },
+ *        humidity: { plant_id, humidity, created_at, updated_at },
+ *        temperature { plant_id, temperature, created_at, updated_at }
+ *      }
  */
 router.get('/saturation/:plant_id/last', async function (req, res, next) {
   // TODO: Handle a bad request more robustly
@@ -85,7 +90,23 @@ router.get('/saturation/:plant_id/last', async function (req, res, next) {
       .json({ error: 'No moisture values found for this plant' });
   }
 
-  res.json(moistureValues);
+  const humidityInstance = await db.Humidity.findOne({
+      where: { plantId: req.params.plant_id },
+      order: [['createdAt', 'DESC']],
+  });
+  
+  const temperatureInstance = await db.Temperature.findOne({
+      where: { plantId: req.params.plant_id },
+      order: [['createdAt', 'DESC']],
+  });
+
+  const response = {
+    moisture: moistureInstance,
+    humidity: humidityInstance,
+    temperature: temperatureInstance
+  }
+
+  res.json(response);
 });
 
 /**
