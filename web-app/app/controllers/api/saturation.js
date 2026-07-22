@@ -88,7 +88,7 @@ router.get('/saturation/:plant_id/last', async function (req, res, next) {
 });
 
 /**
- * Create new moisture, humidity, and temperature value for a plant.
+ * Create new moisture, humidity, and temperature values for a plant.
  */
 router.post('/saturation', async function (req, res, next) {
   
