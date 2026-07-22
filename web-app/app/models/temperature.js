@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   }
     Temperature.init({
         id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false},
-        temperature: { type: DataTypes.INTEGER, allowNull: false }
+        temperature: { type: DataTypes.INTEGER, allowNull: true }
     }, {
         sequelize,
         modelName: 'Temperature',

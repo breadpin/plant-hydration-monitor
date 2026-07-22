@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   }
     Humidity.init({
         id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false},
-        humidity: { type: DataTypes.INTEGER, allowNull: false }
+        humidity: { type: DataTypes.INTEGER, allowNull: true }
     }, {
         sequelize,
         modelName: 'Humidity',
