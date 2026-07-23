@@ -262,8 +262,12 @@ class PlantDetailView {
     }
 
     // There are the same amount of temperature and humidity readings as moisture readings 
-    // Reverse to show newest first
-    moistureReadings.reverse().forEach((moistureReading, i) => {
+    // Iterate backwards to display newest readings first
+    for(let i = moistureReadings.length - 1; i >= 0; i--) {
+      const moistureReading = moistureReadings[i];
+      const humidityReading = humidityReadings[i];
+      const temperatureReading = temperatureReadings[i];
+
       const moisturePercentage = Math.round(
         ((1023 - moistureReading.moisture) / 1023) * 100
       );
@@ -282,10 +286,10 @@ class PlantDetailView {
           ${moisturePercentage}%
         </td>
         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-          ${humidityReadings[i].humidity}%
+          ${humidityReading.humidity}%
         </td>
         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-          ${temperatureReadings[i].temperature}°C
+          ${temperatureReading.temperature}°C
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
           <span class="text-sm font-medium ${statusColor}">${status}</span>
@@ -296,7 +300,7 @@ class PlantDetailView {
         'hover:bg-gray-50 hover:shadow-md dark:hover:shadow-zinc-600 dark:hover:bg-zinc-700 transition duration-200 ease-in';
 
       tbody.appendChild(row);
-    });
+    };
   }
 
   getMoistureStatus(percentage) {
