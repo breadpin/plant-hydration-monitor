@@ -362,8 +362,8 @@ void loop()
   int moisture = std::round(averageOfReads);
 
   // Humidity sensor
-  int temperature = 0;
-  int humidity = 0;
+  int temperature = -300;
+  int humidity = -300;
 
   // Return of zero means successful
   int humiditySensorResult = dht11.readTemperatureHumidity(temperature, humidity);
@@ -402,10 +402,15 @@ void loop()
     // Create our POST request message Body content with MAC address
     String postStr = "sensorVal=";
     postStr += String(moisture);
-    postStr += "&humidityPercentVal=";
-    postStr += String(humidity);
-    postStr += "&temperatureVal=";
-    postStr += String(temperature);
+    // If humidity sensor didn't work, temperatureVal and humidityVal will be processed as null by web app
+    if(humidity != -300) {
+      postStr += "&humidityPercentVal=";
+      postStr += String(humidity);
+    }
+    if(temperature != -300) {
+      postStr += "&temperatureVal=";
+      postStr += String(temperature);
+    }
     postStr += "&macAddress=";
     postStr += WiFi.macAddress();
 
