@@ -117,8 +117,8 @@ router.post('/saturation', async function (req, res, next) {
   const macAddress = req.body.macAddress;
 
   const moistureValue = req.body.sensorVal;
-  const humidityPercentValue = req.body.humidityPercentVal;
-  const temperatureValue = req.body.temperatureVal;
+  const humidityPercentValue = req.body.humidityPercentVal || null;
+  const temperatureValue = req.body.temperatureVal || null;
 
   console.log('Received Saturation Value:', moistureValue);
   console.log('Received Humidity value: ', humidityPercentValue);
