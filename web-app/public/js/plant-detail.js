@@ -86,7 +86,7 @@ class PlantDetailView {
       document.getElementById('last-updated').textContent = 'Never';
     }
     
-    if (humidityData) {
+    if (humidityData.humidity) {
       const humidityPercentage = humidityData.humidity;
       document.getElementById('current-humidity').textContent =
         humidityPercentage
@@ -103,7 +103,7 @@ class PlantDetailView {
       document.getElementById('humidity-status').textContent = 'No Data';
     }
 
-    if (temperatureData) {
+    if (temperatureData.temperature) {
       // Lower temperatures are blue, higher temperatures are red
       const temperaturePercentage = Math.round((1 - temperatureData.temperature / 37.8) * 100);
       document.getElementById('current-temperature').textContent =
@@ -286,10 +286,10 @@ class PlantDetailView {
           ${moisturePercentage}%
         </td>
         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-          ${humidityReading.humidity}%
+          ${humidityReading.humidity == null ? "No Data" : humidityReading.humidity + "%"}
         </td>
         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-          ${temperatureReading.temperature}°C
+          ${temperatureReading.temperature == null ? "No Data" : temperatureReading.temperature + "°C"}
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
           <span class="text-sm font-medium ${statusColor}">${status}</span>
