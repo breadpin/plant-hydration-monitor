@@ -86,7 +86,7 @@ class PlantDetailView {
       document.getElementById('last-updated').textContent = 'Never';
     }
     
-    if (humidityData.humidity) {
+    if (humidityData.humidity != null) {
       const humidityPercentage = humidityData.humidity;
       document.getElementById('current-humidity').textContent =
         humidityPercentage
@@ -103,7 +103,7 @@ class PlantDetailView {
       document.getElementById('humidity-status').textContent = 'No Data';
     }
 
-    if (temperatureData.temperature) {
+    if (temperatureData.temperature != null) {
       // Lower temperatures are blue, higher temperatures are red
       const temperaturePercentage = Math.round((1 - temperatureData.temperature / 37.8) * 100);
       document.getElementById('current-temperature').textContent =
