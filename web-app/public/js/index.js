@@ -980,9 +980,19 @@ async function openPlantBindingsModal() {
 }
 
 async function updateBindings() {
-  showStatusMessage("Updating bindings");
-
   const bindedDevicesDiv = document.getElementById('binded-devices');
+
+  //i=1 skip template
+  for(let i = 1; i < bindedDevicesDiv.children.length; i++) {
+    const currentBindingSlot = bindedDevicesDiv.children[i];
+
+    if(!currentBindingSlot.querySelector('[data-field="draggable-mac-address"]')) {
+      showStatusMessage("Make sure all plants have a binded MAC Address", true);
+      return;
+    }
+  }
+
+  showStatusMessage("Updating bindings");
 
   let plantsUpdated = [];
 
